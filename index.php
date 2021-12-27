@@ -4,10 +4,11 @@
 	<head>
 
 		<?php
-			$connect = mysqli_connect("lampsite.com", "root","password", "lampdb");
-			$query = "SELECT * FROM people_table ORDER BY ID ASC";
-			$result = mysqli_query($connect, $query);
+			include_once "database.php";
+			$query = "SELECT * FROM peopletable ORDER BY ID ASC";
+			$results = mysqli_query($connect, $query);
 		?>
+		//import jquery and css bootstrap for styling and data importing
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>	
 		
@@ -17,8 +18,8 @@
 	<body>
 
 		<div class=container>
-			<h1 align = "center"> Import CSV </h1> <br/>
-			<form id="upload_csv" method = "post" enctype = "multipart/form-data">
+			<h2 align = "center"> Import CSV </h2> <br/>
+			<form action= "upload.php" id="upload_csv" method = "post" enctype = "multipart/form-data">
 			<div>
 				<input type = "file" name = "csv_file"/>
 			</div>
@@ -27,8 +28,8 @@
 			</div>
 			</form>
 			<br/>
-			<div class = "table-responsive" id = "people_table">
-				<table class = "table">
+			<div class = "table-responsive" id = "people_table_container">
+				<table class = "table" id = "people_table">
 					<thead>
 					<tr>
 
@@ -59,7 +60,7 @@
 
 					<td><?php echo $row["Zip"]; ?></td>
 
-					<td><?php echo $row["Note"]; ?></td>
+					<td><?php echo $row["Notes"]; ?></td>
 
 					<td><?php echo $row["ID"]; ?> </td>
 
@@ -79,7 +80,6 @@
 	</body>
 </html>
 
-
 <script>
 			$(document).ready(function(){
 				$('#upload_csv').on('submit',function(e){
@@ -91,7 +91,25 @@
 						cache:false,
 						processData:false,
 						success:function(data){
-						
+							switch(data){
+
+							case "Error1":
+							  alert("File is Invalid");
+							  break;
+							case "Error2":
+							  alert("No File Selected");
+							  break;
+							case "Success":
+							  alert("File Already Imported");
+							  //clear upload
+							  $('#upload_csv')[0].reset();
+							  break;
+							default:
+							  //put data into table
+							  
+							  $('people_table').html(data);
+							  alert("populated people table");
+							}
 						}
 					});
 				});
