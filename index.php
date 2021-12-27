@@ -5,8 +5,6 @@
 
 		<?php
 			include_once "database.php";
-			$query = "SELECT * FROM peopletable ORDER BY ID ASC";
-			$results = mysqli_query($connect, $query);
 		?>
 		//import jquery and css bootstrap for styling and data importing
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -29,7 +27,7 @@
 			</form>
 			<br/>
 			<div class = "table-responsive" id = "people_table_container">
-				<table class = "table" id = "people_table">
+				<table class = "table table-bordered table-striped" id = "people_table">
 					<thead>
 					<tr>
 
@@ -44,6 +42,30 @@
 					</tr></thead>
 					<tbody>
 					<?php
+					
+					//as per mockup, 5 records per page will be displayed
+					$records_per_page = 5;
+					//count records in peopletable
+					$num_records = mysqli_fetch_array(mysqli_query($connect,"SELECT COUNT(*) AS num_recs FROM peopletable;"))['num_recs'];
+					//calc number of pages needed to display that many records
+					$num_pages = ceil($num_records / $records_per_page);
+					
+					
+					
+					//get page number
+					if(isset($_GET['page_num']) && $_GET['page_num']!="")
+					{
+						$page_num = $_GET['page_num'];
+					} else{
+						//defaut to first page
+						$page_num = 1;
+					}
+					
+					$offset = ($page_num-1)*$records_per_page;
+					$query = "SELECT * FROM peopletable LIMIT ".$offset.", ".$records_per_page.";";
+					
+					$results = mysqli_query($connect, $query);
+						
 					while($row= mysqli_fetch_array($results)){
 					?>
 					<tr>
@@ -73,7 +95,20 @@
 				
 				
 				</table>
-			</div> 
+			</div>
+
+			<div>
+				Page <?php echo $page_num . " of ". $num_pages; ?>
+				
+				<!--Pagination buttons composed of a list of labled links to add the ?page_num parameter to the url to be retrieved from the $_GET array above. Not functional for any number of pages aside from the hard coded 3, but gets the job done succinctly-->
+					
+				<ul class = "pagination">
+
+					<li><a href = '?page_num=1'>Page 1</a></li>
+					<li><a href = '?page_num=2'>Page 2</a></li>
+					<li><a href = '?page_num=3'>Page 3</a></li>
+				</ul>
+			</div>
 				
 		</div>			
 		
