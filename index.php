@@ -62,17 +62,16 @@
 					}
 					
 					$offset = ($page_num-1)*$records_per_page;
-					$query = "SELECT * FROM peopletable LIMIT ".$offset.", ".$records_per_page.";";
-					
+					$query = "SELECT * FROM peopletable LIMIT ".$offset.", ".$records_per_page.";";	
+
 					$results = mysqli_query($connect, $query);
 					$counter=1;
 
 					//generate table rows with incrementing IDs
 					while($row= mysqli_fetch_array($results)){
-						echo "<tr id=row-".$counter.">";
 						$counter++;	
 					?>
-					
+					<tr>	
 
 					<td><?php echo $row["FirstName"]; ?></td>
 
@@ -92,6 +91,7 @@
 
 					</tr>
 					<?php
+						$counter--;
 						}
 					?>
 					</tbody>
@@ -120,7 +120,15 @@
 </html>
 
 <script>
+
 			$(document).ready(function(){
+				
+				//add event listeners to table rows
+				$(document).on('click', 'tr', function(){
+					alert("test alert");
+				});
+				 
+
 				$('#upload_csv').on('submit',function(e){
 					e.preventDefaut();
 					$.ajax({url:"import.php",
