@@ -149,6 +149,7 @@
 						method:"POST",
 
 						success: function(data){
+						$("table tr").removeClass("active");
 						$($(e.target).parent()).toggleClass("active");
 
 						//convoluted but effective way to get an array of the td values from the clicked tr			
