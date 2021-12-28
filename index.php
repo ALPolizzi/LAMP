@@ -2,11 +2,11 @@
 
 <html>
 	<head>
-
+		<link rel = "stylesheet" href = "style.css">
 		<?php
 			include_once "database.php";
 		?>
-		//import jquery and css bootstrap for styling and data importing
+		<!--inport jquery and css bootstrap for styling and data inporting-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>	
 		
@@ -14,9 +14,10 @@
 	</head>
 
 	<body>
-
+		
 		<div class=container>
-			<h2 align = "center"> Import CSV </h2> <br/>
+			<h2 align = "center"> Coding Interview: Anthony Polizzi </h2> <br/>
+			<p>aliampolizzi@gmail.com</p>
 			<form action= "upload.php" id="upload_csv" method = "post" enctype = "multipart/form-data">
 			<div>
 				<input type = "file" name = "csv_file"/>
@@ -27,7 +28,7 @@
 			</form>
 			<br/>
 			<div class = "table-responsive" id = "people_table_container">
-				<table class = "table table-bordered table-striped" id = "people_table">
+				<table class = "table" id = "people_table">
 					<thead>
 					<tr>
 
@@ -113,7 +114,25 @@
 					<li><a href = '?page_num=3'>Page 3</a></li>
 				</ul>
 			</div>
+
+			<div id=details-label>
+				<h2>Details view</h2>
+			</div>
+			
+			<div class = 'dtable' id="dtable">
+			
+				<p>First Name: </p>
+				<p>Last Name: </p>
+				<p>Address: </p>
+				<p>City: </p>
+				<p>State: </p>
+				<p>Zip: </p>
+				<p>Notes: </p>
+				<p>ID: </p>
 				
+			</div>
+			
+
 		</div>			
 		
 	</body>
@@ -124,20 +143,63 @@
 			$(document).ready(function(){
 				
 				//add event listeners to table rows
-				$(document).on('click', 'tr', function(){
-					alert("test alert");
-				});
+				$(document).on('click', 'tr', function(e){
+					e.preventDefault();
+					$.ajax({
+						method:"POST",
+
+						success: function(data){
+						$($(e.target).parent()).toggleClass("active");
+
+						//convoluted but effective way to get an array of the td values from the clicked tr			
+						
+						$text_array = $(e.target).parent().text().split("\n");
+						$mod_text_array=[];
+						for(i =0; i< $text_array.length; i++)
+						{
+							$text_array[i] = $text_array[i].trim();
+							if ($text_array[i] != "" && $text_array[i] !=","){
+								$mod_text_array.push($text_array[i]);
+							}
+						}
+
+			      						
+
+						$fname ="<p>First Name: "+$mod_text_array[0]+"</p>";
+						$lname = "<p>Last Name: "+$mod_text_array[1]+"</p>";
+	
+						$add = "<p>Address: "+$mod_text_array[2]+"</p>";
+
+						$city = "<p>City: "+$mod_text_array[3]+"</p>";
+
+						$state = "<p>State: "+$mod_text_array[4]+"</p>";
+
+						$zip = "<p>Zip Code: "+$mod_text_array[5]+"</p>";
+
+						$notes = "<p>Notes: "+$mod_text_array[6]+"</p>";
+
+						$id = "<p>Database ID: "+$mod_text_array[7]+"</p>";
+
+						
+						$(".dtable").empty();
+						$(".dtable").append($fname, $lname, $add, $city, $state, $zip, $notes, $id);	
+						}
+
+						});
+					});
+				
 				 
 
 				$('#upload_csv').on('submit',function(e){
-					e.preventDefaut();
-					$.ajax({url:"import.php",
+					e.preventDefault();
+					$.ajax({
 						method:"POST",
 						data: new FormData(this),
 						contentType:false,
 						cache:false,
 						processData:false,
 						success:function(data){
+
 							switch(data){
 
 							case "Error1":
